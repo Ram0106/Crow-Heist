@@ -30,6 +30,7 @@ export default function Heist() {
   const [submitting, setSubmitting] = useState(false);
   const [showCountdown, setShowCountdown] = useState(true);
   const [countdownValue, setCountdownValue] = useState(3);
+  const [hintsEnabled, setHintsEnabled] = useState(false);
   const submittedRef = useRef(false);
 
   const submitCurrentHeist = useCallback(async () => {
@@ -157,6 +158,8 @@ export default function Heist() {
         elapsedTime={elapsedTime}
         timerStarted={Boolean(startedAt)}
         onSubmit={submitCurrentHeist}
+        hintsEnabled={hintsEnabled}
+        onToggleHints={() => setHintsEnabled(prev => !prev)}
       />
       {submitting ? <p className="mb-4 text-crow-gold">Submitting...</p> : null}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -176,6 +179,7 @@ export default function Heist() {
               object={object}
               selected={selectedObjects.some((item) => item.id === object.id)}
               onToggle={toggleObject}
+              hintsEnabled={hintsEnabled}
             />
           </motion.div>
         ))}

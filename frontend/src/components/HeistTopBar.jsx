@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { getSelectedTotals } from '../utils/heistMath';
 
-export default function HeistTopBar({ level, selectedObjects, elapsedTime, timerStarted, onSubmit }) {
+export default function HeistTopBar({ level, selectedObjects, elapsedTime, timerStarted, onSubmit, hintsEnabled, onToggleHints }) {
   const totals = getSelectedTotals(selectedObjects);
   const overLimit = totals.weight > level.carry_limit;
   const progress = timerStarted
@@ -11,7 +11,7 @@ export default function HeistTopBar({ level, selectedObjects, elapsedTime, timer
 
   return (
     <div className="sharp-panel sticky top-0 z-10 mb-5 p-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-[1.5fr_1fr_1fr_1fr_auto] xl:items-center">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-[1.5fr_1fr_1fr_auto_auto] xl:items-center">
         <div>
           <p className="text-xs uppercase tracking-[0.26em] text-crow-muted">Location</p>
           <h1 className="location-font text-3xl font-bold text-white">{level.location_name}</h1>
@@ -19,15 +19,31 @@ export default function HeistTopBar({ level, selectedObjects, elapsedTime, timer
         <Counter label="Carry" value={`${totals.weight}/${level.carry_limit}`} danger={overLimit} />
         <Counter label="Value" value={totals.value} />
         <Counter label="Time" value={`${elapsedTime}s`} isLowTime={isLowTime} />
-        <motion.button
-          type="button"
-          onClick={onSubmit}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="border border-crow-gold px-5 py-3 text-sm uppercase tracking-[0.2em] text-crow-gold hover:bg-crow-gold hover:text-black xl:justify-self-end"
-        >
-          Submit
-        </motion.button>
+        <div className="flex gap-2 xl:justify-self-end">
+          <motion.button
+            type="button"
+            onClick={onToggleHints}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`border px-4 py-3 text-sm uppercase tracking-[0.2em] ${
+              hintsEnabled
+                ? 'border-crow-gold bg-crow-gold/20 text-crow-gold'
+                : 'border-crow-line text-crow-muted hover:border-crow-muted'
+            }`}
+            title="Toggle value hints"
+          >
+            Hints
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={onSubmit}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="border border-crow-gold px-5 py-3 text-sm uppercase tracking-[0.2em] text-crow-gold hover:bg-crow-gold hover:text-black"
+          >
+            Submit
+          </motion.button>
+        </div>
       </div>
       <div className="mt-4 h-1 bg-crow-line">
         <motion.div
