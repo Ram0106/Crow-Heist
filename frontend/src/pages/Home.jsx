@@ -53,6 +53,14 @@ export default function Home() {
           <p className="text-xs uppercase tracking-[0.3em] text-crow-gold">Daily</p>
           <h3 className="mt-3 text-3xl font-semibold text-white">Daily Heist</h3>
         </button>
+        <button
+          type="button"
+          onClick={() => navigate('/achievements')}
+          className="sharp-panel p-8 text-left hover:border-crow-gold"
+        >
+          <p className="text-xs uppercase tracking-[0.3em] text-crow-gold">Collection</p>
+          <h3 className="mt-3 text-3xl font-semibold text-white">Achievements</h3>
+        </button>
       </section>
 
       <section className="sharp-panel overflow-x-auto p-5">

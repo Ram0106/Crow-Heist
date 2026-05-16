@@ -1,5 +1,6 @@
 const { prisma } = require('../config/database');
 const { calculateHeistScore } = require('../utils/scoring');
+const { checkAndAwardAchievements } = require('../services/achievementService');
 
 function serializeLevel(level) {
   return {
@@ -187,6 +188,27 @@ async function processHeistSubmission({
       selectedObjects,
       score: scoreBreakdown.score
     });
+
+    // Check and award achievements
+    const newlyEarned = await checkAndAwardAchievements(player.id, scoreBreakdown, {
+      carry_limit: level.weight_limit,
+      decoys_avoided: level.objects.length - selectedObjects.filter(o => o.is_decoy).length,
+      total_decoys: level.objects.filter(o => o.is_decoy).length
+    });
+
+    return {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: {
+          heist_result: heistResult,
+          score_breakdown: scoreBreakdown,
+          completed_levels: player.completed_levels,
+          new_achievements: newlyEarned
+        },
+        error: null
+      }
+    };
   } else {
     await prisma.player.update({
       where: { id: player.id },

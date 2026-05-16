@@ -14,6 +14,7 @@ export default function Result() {
   const breakdown = result?.score_breakdown;
   const heistResult = result?.heist_result;
   const unlockedLevels = result?.unlocked_levels || [];
+  const newAchievements = result?.new_achievements || [];
   const nextLevelNumber = Number(levelNumber || 1) + 1;
   const canPlayNextLevel = breakdown?.success && unlockedLevels.includes(nextLevelNumber);
 
@@ -56,6 +57,23 @@ export default function Result() {
           </div>
         </section>
       </div>
+
+      {newAchievements.length > 0 && (
+        <section className="sharp-panel mt-6 border border-crow-gold p-6">
+          <p className="text-xs uppercase tracking-[0.3em] text-crow-gold">Achievement Unlocked!</p>
+          <div className="mt-4 flex flex-wrap gap-4">
+            {newAchievements.map((achievement) => (
+              <div key={achievement.id} className="flex items-center gap-3">
+                <span className="text-3xl">{achievement.icon}</span>
+                <div>
+                  <h3 className="font-semibold text-white">{achievement.name}</h3>
+                  <p className="text-xs text-crow-muted">{achievement.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button

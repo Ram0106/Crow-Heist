@@ -16,11 +16,14 @@ model Player {
   total_score     Int      @default(0) @db.Integer
   current_level   Int      @default(1) @db.Integer
   completed_levels Int[]    @default([]) @db.Integer
+  daily_streak    Int      @default(0) @db.Integer
+  decoys_avoided  Int      @default(0) @db.Integer
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   heist_results   HeistResult[]
   daily_heist_entries DailyHeistEntry[]
+  player_achievements PlayerAchievement[]
 
   @@index([username])
   @@index([total_score])
@@ -100,5 +103,33 @@ model DailyHeistEntry {
 
   @@unique([daily_heist_id, player_id])
   @@index([daily_heist_id])
+  @@index([player_id])
+}
+
+model Achievement {
+  id            String   @id @default(cuid())
+  code          String   @unique @db.VarChar(50)
+  name          String   @db.VarChar(100)
+  description   String   @db.Text
+  icon          String   @db.VarChar(50)
+  category      String   @db.VarChar(30)
+  requirement   Int      @default 1
+  created_at    DateTime @default(now())
+
+  player_achievements PlayerAchievement[]
+
+  @@index([code])
+  @@index([category])
+}
+
+model PlayerAchievement {
+  id              String   @id @default(cuid())
+  player_id       String
+  player          Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
+  achievement_id String
+  achievement    Achievement @relation(fields: [achievement_id], references: [id], onDelete: Cascade)
+  unlocked_at    DateTime @default(now())
+
+  @@unique([player_id, achievement_id])
   @@index([player_id])
 }

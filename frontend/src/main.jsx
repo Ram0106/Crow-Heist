@@ -9,6 +9,7 @@ import Heist from './pages/Heist.jsx';
 import DailyHeist from './pages/DailyHeist.jsx';
 import Result from './pages/Result.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
+import Achievements from './pages/Achievements.jsx';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -22,7 +23,8 @@ const router = createBrowserRouter([
       { path: 'heist/:levelId', element: <Heist /> },
       { path: 'daily', element: <DailyHeist /> },
       { path: 'result', element: <Result /> },
-      { path: 'leaderboard', element: <Leaderboard /> }
+      { path: 'leaderboard', element: <Leaderboard /> },
+      { path: 'achievements', element: <Achievements /> }
     ]
   }
 ]);

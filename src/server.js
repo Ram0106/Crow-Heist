@@ -2,11 +2,13 @@ const express = require('express');
 const dotenv = require('dotenv');
 const { connectDatabase } = require('./config/database');
 const { seedLevelsIfEmpty } = require('./seed/seedLevels');
+const { seedAchievements } = require('./services/achievementService');
 const playerRoutes = require('./routes/playerRoutes');
 const heistRoutes = require('./routes/heistRoutes');
 const levelRoutes = require('./routes/levelRoutes');
 const dailyHeistRoutes = require('./routes/dailyHeistRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
+const achievementRoutes = require('./routes/achievementRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -43,6 +45,7 @@ app.use('/api/heist', heistRoutes);
 app.use('/api/levels', levelRoutes);
 app.use('/api/daily-heist', dailyHeistRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/achievements', achievementRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -50,6 +53,7 @@ app.use(errorHandler);
 async function startServer() {
   await connectDatabase();
   await seedLevelsIfEmpty();
+  await seedAchievements();
 
   app.listen(port, () => {
     console.log(`Crow Heist API listening on port ${port}`);
