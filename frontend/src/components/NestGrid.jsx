@@ -14,12 +14,30 @@ export default function NestGrid({ items = [], animated = false }) {
       {items.map((item, index) => (
         <motion.div
           key={`${item.name}-${index}`}
-          initial={animated ? { opacity: 0, y: -18 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: animated ? index * 0.1 : 0 }}
-          className="border border-crow-line bg-crow-panel p-3"
+          initial={animated ? { opacity: 0, scale: 0.3, rotate: -10 } : false}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            rotate: 0,
+            y: [0, -8, 0]
+          }}
+          whileHover={{ scale: 1.05, boxShadow: '0 4px 20px rgba(201, 169, 69, 0.2)' }}
+          transition={{
+            delay: animated ? index * 0.08 : 0,
+            type: 'spring',
+            stiffness: 350,
+            damping: 15,
+            y: { duration: 0.5, delay: animated ? index * 0.08 + 0.3 : 0.3 }
+          }}
+          className="cursor-pointer border border-crow-line bg-crow-panel p-3"
         >
-          <div className="mb-3 h-8 w-8 border border-crow-gold text-center leading-8 text-crow-gold">&diams;</div>
+          <motion.div
+            className="mb-3 flex h-10 w-10 items-center justify-center border border-crow-gold text-crow-gold"
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+          >
+            &diams;
+          </motion.div>
           <p className="text-sm font-semibold text-white">{item.name}</p>
           <p className="mt-1 text-xs text-crow-muted">Value {item.value}</p>
         </motion.div>

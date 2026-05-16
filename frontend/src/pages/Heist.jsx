@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import AppLayout from '../components/AppLayout';
 import HeistTopBar from '../components/HeistTopBar';
 import ObjectCard from '../components/ObjectCard';
@@ -27,6 +28,8 @@ export default function Heist() {
   } = useHeistStore();
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showCountdown, setShowCountdown] = useState(true);
+  const [countdownValue, setCountdownValue] = useState(3);
   const submittedRef = useRef(false);
 
   const submitCurrentHeist = useCallback(async () => {
@@ -59,6 +62,8 @@ export default function Heist() {
   useEffect(() => {
     if (!playerId) return;
     submittedRef.current = false;
+    setShowCountdown(true);
+    setCountdownValue(3);
     let isMounted = true;
     let timerId;
 
@@ -66,9 +71,27 @@ export default function Heist() {
       .then((response) => {
         if (!isMounted) return;
         setActiveLevel(response.data.level);
-        timerId = setTimeout(() => startTimer(), 2000);
+
+        let count = 3;
+        const countdownInterval = setInterval(() => {
+          if (!isMounted) {
+            clearInterval(countdownInterval);
+            return;
+          }
+          count--;
+          if (count > 0) {
+            setCountdownValue(count);
+          } else {
+            clearInterval(countdownInterval);
+            setShowCountdown(false);
+            startTimer();
+          }
+        }, 700);
       })
-      .catch((requestError) => setError(requestError.message));
+      .catch((requestError) => {
+        if (!isMounted) return;
+        setError(requestError.message);
+      });
 
     return () => {
       isMounted = false;
@@ -106,6 +129,28 @@ export default function Heist() {
 
   return (
     <AppLayout>
+      <AnimatePresence>
+        {showCountdown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          >
+            <motion.span
+              key={countdownValue}
+              initial={{ scale: 0.3, opacity: 0 }}
+              animate={{ scale: 1.2, opacity: 1 }}
+              exit={{ scale: 1.5, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              className="text-9xl font-bold text-crow-gold"
+            >
+              {countdownValue}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <HeistTopBar
         level={activeLevel}
         selectedObjects={selectedObjects}
@@ -115,13 +160,24 @@ export default function Heist() {
       />
       {submitting ? <p className="mb-4 text-crow-gold">Submitting...</p> : null}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {activeLevel.objects.map((object) => (
-          <ObjectCard
+        {activeLevel.objects.map((object, index) => (
+          <motion.div
             key={object.id}
-            object={object}
-            selected={selectedObjects.some((item) => item.id === object.id)}
-            onToggle={toggleObject}
-          />
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              delay: index * 0.06,
+              type: 'spring',
+              stiffness: 300,
+              damping: 20
+            }}
+          >
+            <ObjectCard
+              object={object}
+              selected={selectedObjects.some((item) => item.id === object.id)}
+              onToggle={toggleObject}
+            />
+          </motion.div>
         ))}
       </div>
     </AppLayout>
