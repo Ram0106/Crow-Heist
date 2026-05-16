@@ -32,11 +32,20 @@ export default function Home() {
       <PageHeader eyebrow="Roost" title="The Nest" />
 
       <section className="mb-8">
-        <h2 className="mb-3 text-sm uppercase tracking-[0.24em] text-crow-muted">Collected Items</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm uppercase tracking-[0.24em] text-crow-muted">Collected Items</h2>
+          <button
+            type="button"
+            onClick={() => navigate('/collection')}
+            className="text-xs uppercase tracking-[0.2em] text-crow-gold hover:underline"
+          >
+            View All →
+          </button>
+        </div>
         <NestGrid items={player.nest_items} />
       </section>
 
-      <section className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <section className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <button
           type="button"
           onClick={() => navigate(primaryDestination)}
@@ -58,7 +67,7 @@ export default function Home() {
           onClick={() => navigate('/achievements')}
           className="sharp-panel p-8 text-left hover:border-crow-gold"
         >
-          <p className="text-xs uppercase tracking-[0.3em] text-crow-gold">Collection</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-crow-gold">Badges</p>
           <h3 className="mt-3 text-3xl font-semibold text-white">Achievements</h3>
         </button>
       </section>

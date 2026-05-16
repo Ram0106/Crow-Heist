@@ -25,9 +25,24 @@ model Player {
   daily_heist_entries DailyHeistEntry[]
   player_achievements PlayerAchievement[]
   level_results   LevelResult[]
+  collected_items CollectedItem[]
 
   @@index([username])
   @@index([total_score])
+}
+
+model CollectedItem {
+  id              String   @id @default(cuid())
+  player_id       String
+  player          Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
+  item_name       String   @db.VarChar(100)
+  rarity          String   @default 'common' @db.VarChar(20)
+  total_value     Int      @default 0 @db.Integer
+  times_collected Int      @default 1 @db.Integer
+  last_collected  DateTime @default(now())
+
+  @@unique([player_id, item_name])
+  @@index([player_id])
 }
 
 model Level {

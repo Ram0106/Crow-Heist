@@ -39,17 +39,20 @@ function findSelectedObjects(level, selectedObjectIds) {
     }));
 }
 
+function determineRarity(value) {
+  if (value >= 100) return 'legendary';
+  if (value >= 50) return 'rare';
+  if (value >= 20) return 'uncommon';
+  return 'common';
+}
+
 async function applySuccessfulHeistRewards({ player, level, selectedObjects, score }) {
   const nextLevel = level.level_number + 1;
   const newCompletedLevels = [...(player.completed_levels || [])];
-  
+
   if (!newCompletedLevels.includes(level.level_number)) {
     newCompletedLevels.push(level.level_number);
   }
-
-  const nextLevelExists = await prisma.level.findUnique({
-    where: { level_number: nextLevel }
-  });
 
   const updatedPlayer = await prisma.player.update({
     where: { id: player.id },
@@ -59,6 +62,41 @@ async function applySuccessfulHeistRewards({ player, level, selectedObjects, sco
       completed_levels: newCompletedLevels
     }
   });
+
+  // Record collected items with rarity
+  for (const obj of selectedObjects) {
+    if (obj.is_decoy) continue;
+    const rarity = determineRarity(obj.value);
+    const existing = await prisma.collectedItem.findUnique({
+      where: {
+        player_id_item_name: {
+          player_id: player.id,
+          item_name: obj.name
+        }
+      }
+    });
+
+    if (existing) {
+      await prisma.collectedItem.update({
+        where: { id: existing.id },
+        data: {
+          total_value: existing.total_value + obj.value,
+          times_collected: existing.times_collected + 1,
+          last_collected: new Date()
+        }
+      });
+    } else {
+      await prisma.collectedItem.create({
+        data: {
+          player_id: player.id,
+          item_name: obj.name,
+          rarity,
+          total_value: obj.value,
+          times_collected: 1
+        }
+      });
+    }
+  }
 
   return updatedPlayer;
 }
