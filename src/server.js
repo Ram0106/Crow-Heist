@@ -9,6 +9,7 @@ const levelRoutes = require('./routes/levelRoutes');
 const dailyHeistRoutes = require('./routes/dailyHeistRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const achievementRoutes = require('./routes/achievementRoutes');
+const levelResultRoutes = require('./routes/levelResultRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use('/api/levels', levelRoutes);
 app.use('/api/daily-heist', dailyHeistRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/achievements', achievementRoutes);
+app.use('/api/level-results', levelResultRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

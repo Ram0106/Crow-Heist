@@ -24,6 +24,7 @@ model Player {
   heist_results   HeistResult[]
   daily_heist_entries DailyHeistEntry[]
   player_achievements PlayerAchievement[]
+  level_results   LevelResult[]
 
   @@index([username])
   @@index([total_score])
@@ -36,9 +37,27 @@ model Level {
   difficulty      String   @db.VarChar(20)
   time_limit      Int      @db.Integer
   weight_limit    Int      @db.Integer
+  one_star_min    Int      @default 0 @db.Integer
+  two_star_min    Int      @default 0 @db.Integer
+  three_star_min  Int      @default 0 @db.Integer
   objects         Object[]
   daily_heists    DailyHeist[]
+  level_results   LevelResult[]
 
+  @@index([level_number])
+}
+
+model LevelResult {
+  id          String   @id @default(cuid())
+  player_id   String
+  player      Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
+  level_number Int     @db.Integer
+  stars       Int      @db.Integer
+  best_score  Int      @db.Integer
+  timestamp   DateTime @default(now())
+
+  @@unique([player_id, level_number])
+  @@index([player_id])
   @@index([level_number])
 }
 

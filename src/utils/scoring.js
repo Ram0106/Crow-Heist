@@ -14,7 +14,8 @@ function calculateHeistScore({ selectedObjects, carryLimit, timeTakenSeconds, ti
       timeBonusMultiplier: 1,
       decoyPenaltyPercent: decoyCount * 20,
       decoyCount,
-      score: 0
+      score: 0,
+      stars: 0
     };
   }
 
@@ -36,6 +37,14 @@ function calculateHeistScore({ selectedObjects, carryLimit, timeTakenSeconds, ti
   };
 }
 
+function calculateStars(score, oneStarMin = 0, twoStarMin = 0, threeStarMin = 0) {
+  if (score >= threeStarMin) return 3;
+  if (score >= twoStarMin) return 2;
+  if (score >= oneStarMin) return 1;
+  return 0;
+}
+
 module.exports = {
-  calculateHeistScore
+  calculateHeistScore,
+  calculateStars
 };

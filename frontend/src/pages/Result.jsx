@@ -41,6 +41,22 @@ export default function Result() {
             {breakdown.success ? 'Successful Lift' : 'Wings Clipped'}
           </h1>
 
+          {breakdown.success && breakdown.stars > 0 && (
+            <div className="mt-4 flex items-center gap-2">
+              {[1, 2, 3].map((star) => (
+                <span
+                  key={star}
+                  className={`text-3xl ${star <= breakdown.stars ? 'text-crow-gold' : 'text-crow-line'}`}
+                >
+                  ★
+                </span>
+              ))}
+              <span className="ml-2 text-sm text-crow-muted">
+                {breakdown.stars === 3 ? 'Perfect!' : breakdown.stars === 2 ? 'Great!' : 'Good!'}
+              </span>
+            </div>
+          )}
+
           <div className="mt-8 grid gap-4">
             <ScoreRow label="Base Score" value={breakdown.baseScore} />
             <ScoreRow label="Time Bonus" value={`${breakdown.timeBonusMultiplier}x`} plain />

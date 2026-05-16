@@ -1,5 +1,5 @@
 const { prisma } = require('../config/database');
-const { calculateHeistScore } = require('../utils/scoring');
+const { calculateHeistScore, calculateStars } = require('../utils/scoring');
 const { checkAndAwardAchievements } = require('../services/achievementService');
 
 function serializeLevel(level) {
@@ -189,6 +189,45 @@ async function processHeistSubmission({
       score: scoreBreakdown.score
     });
 
+    // Calculate stars based on score thresholds
+    const stars = calculateStars(
+      scoreBreakdown.score,
+      level.one_star_min || 0,
+      level.two_star_min || 0,
+      level.three_star_min || 0
+    );
+
+    // Save or update level result with stars
+    const existingResult = await prisma.levelResult.findUnique({
+      where: {
+        player_id_level_number: {
+          player_id: player.id,
+          level_number: level.level_number
+        }
+      }
+    });
+
+    if (existingResult) {
+      if (stars > existingResult.stars || scoreBreakdown.score > existingResult.best_score) {
+        await prisma.levelResult.update({
+          where: { id: existingResult.id },
+          data: {
+            stars: Math.max(existingResult.stars, stars),
+            best_score: Math.max(existingResult.best_score, scoreBreakdown.score)
+          }
+        });
+      }
+    } else {
+      await prisma.levelResult.create({
+        data: {
+          player_id: player.id,
+          level_number: level.level_number,
+          stars,
+          best_score: scoreBreakdown.score
+        }
+      });
+    }
+
     // Check and award achievements
     const newlyEarned = await checkAndAwardAchievements(player.id, scoreBreakdown, {
       carry_limit: level.weight_limit,
@@ -202,7 +241,7 @@ async function processHeistSubmission({
         success: true,
         data: {
           heist_result: heistResult,
-          score_breakdown: scoreBreakdown,
+          score_breakdown: { ...scoreBreakdown, stars },
           completed_levels: player.completed_levels,
           new_achievements: newlyEarned
         },
