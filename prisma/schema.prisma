@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id              String   @id @default(cuid())
+  username        String   @unique @db.VarChar(24)
+  total_score     Int      @default(0) @db.Integer
+  current_level   Int      @default(1) @db.Integer
+  completed_levels Int[]    @default([]) @db.Integer
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  heist_results   HeistResult[]
+  daily_heist_entries DailyHeistEntry[]
+
+  @@index([username])
+  @@index([total_score])
+}
+
+model Level {
+  id              String   @id @default(cuid())
+  level_number    Int      @unique @db.Integer
+  location_name   String   @db.VarChar(100)
+  difficulty      String   @db.VarChar(20)
+  time_limit      Int      @db.Integer
+  weight_limit    Int      @db.Integer
+  objects         Object[]
+  daily_heists    DailyHeist[]
+
+  @@index([level_number])
+}
+
+model Object {
+  id              String   @id @default(cuid())
+  level_id        String
+  level           Level    @relation(fields: [level_id], references: [id], onDelete: Cascade)
+  name            String   @db.VarChar(100)
+  value           Int      @db.Integer
+  weight          Int      @db.Integer
+  is_decoy        Boolean  @default(false)
+
+  @@index([level_id])
+}
+
+model HeistResult {
+  id                String   @id @default(cuid())
+  player_id         String
+  player            Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
+  level_number      Int      @db.Integer
+  selected_objects  SelectedObject[]
+  total_value       Int      @db.Integer
+  total_weight      Int      @db.Integer
+  score             Int      @db.Integer
+  completed         Boolean  @default(true)
+  timestamp         DateTime @default(now())
+
+  @@index([player_id])
+  @@index([timestamp])
+}
+
+model SelectedObject {
+  id              String   @id @default(cuid())
+  heist_result_id String
+  heist_result    HeistResult @relation(fields: [heist_result_id], references: [id], onDelete: Cascade)
+  name            String   @db.VarChar(100)
+  value           Int      @db.Integer
+  weight          Int      @db.Integer
+  is_decoy        Boolean  @db.Boolean
+
+  @@index([heist_result_id])
+}
+
+model DailyHeist {
+  id              String   @id @default(cuid())
+  date            String   @unique @db.VarChar(10)
+  level_number    Int      @db.Integer
+  level           Level    @relation(fields: [level_number], references: [level_number], onDelete: Cascade)
+  leaderboard     DailyHeistEntry[]
+
+  @@index([date])
+  @@index([level_number])
+}
+
+model DailyHeistEntry {
+  id              String   @id @default(cuid())
+  daily_heist_id  String
+  daily_heist     DailyHeist @relation(fields: [daily_heist_id], references: [id], onDelete: Cascade)
+  player_id       String
+  player          Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
+  score           Int      @db.Integer
+
+  @@unique([daily_heist_id, player_id])
+  @@index([daily_heist_id])
+  @@index([player_id])
+}

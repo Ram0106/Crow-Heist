@@ -1,0 +1,23 @@
+{
+  "name": "crow-heist-api",
+  "version": "1.0.0",
+  "description": "REST API backend for the Crow Heist mobile game.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/seed/seedLevels.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "@prisma/client": "^5.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "prisma": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
