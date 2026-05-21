@@ -57,7 +57,11 @@ app.use(errorHandler);
 async function startServer() {
   await connectDatabase();
   await seedLevelsIfEmpty();
-  await seedAchievements();
+  try {
+    await seedAchievements();
+  } catch (e) {
+    console.warn('Achievement seeding skipped:', e.message);
+  }
 
   app.listen(port, () => {
     console.log(`Crow Heist API listening on port ${port}`);

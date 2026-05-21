@@ -27,3 +27,6 @@ build/
 
 # Prisma
 prisma/migrations/
+
+# Claude/Cursor settings
+.claude/

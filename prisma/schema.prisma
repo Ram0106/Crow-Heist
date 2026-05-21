@@ -36,10 +36,12 @@ model CollectedItem {
   player_id       String
   player          Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
   item_name       String   @db.VarChar(100)
-  rarity          String   @default 'common' @db.VarChar(20)
-  total_value     Int      @default 0 @db.Integer
-  times_collected Int      @default 1 @db.Integer
+  rarity          String   @default("common") @db.VarChar(20)
+
+  total_value     Int      @default(0)
+  times_collected Int      @default(1)
   last_collected  DateTime @default(now())
+
 
   @@unique([player_id, item_name])
   @@index([player_id])
@@ -47,34 +49,36 @@ model CollectedItem {
 
 model Level {
   id              String   @id @default(cuid())
-  level_number    Int      @unique @db.Integer
+  level_number    Int      @unique
   location_name   String   @db.VarChar(100)
   difficulty      String   @db.VarChar(20)
-  time_limit      Int      @db.Integer
-  weight_limit    Int      @db.Integer
-  one_star_min    Int      @default 0 @db.Integer
-  two_star_min    Int      @default 0 @db.Integer
-  three_star_min  Int      @default 0 @db.Integer
+  time_limit      Int
+  weight_limit    Int
+  one_star_min    Int      @default(0)
+  two_star_min    Int      @default(0)
+  three_star_min  Int      @default(0)
   objects         Object[]
   daily_heists    DailyHeist[]
-  level_results   LevelResult[]
 
   @@index([level_number])
 }
+
+
 
 model LevelResult {
   id          String   @id @default(cuid())
   player_id   String
   player      Player   @relation(fields: [player_id], references: [id], onDelete: Cascade)
-  level_number Int     @db.Integer
-  stars       Int      @db.Integer
-  best_score  Int      @db.Integer
+  level_number Int
+  stars       Int
+  best_score  Int
   timestamp   DateTime @default(now())
 
   @@unique([player_id, level_number])
   @@index([player_id])
   @@index([level_number])
 }
+
 
 model Object {
   id              String   @id @default(cuid())
@@ -109,9 +113,10 @@ model SelectedObject {
   heist_result_id String
   heist_result    HeistResult @relation(fields: [heist_result_id], references: [id], onDelete: Cascade)
   name            String   @db.VarChar(100)
-  value           Int      @db.Integer
-  weight          Int      @db.Integer
-  is_decoy        Boolean  @db.Boolean
+  value           Int
+  weight          Int
+  is_decoy        Boolean
+
 
   @@index([heist_result_id])
 }
@@ -147,7 +152,7 @@ model Achievement {
   description   String   @db.Text
   icon          String   @db.VarChar(50)
   category      String   @db.VarChar(30)
-  requirement   Int      @default 1
+  requirement   Int      @default(1)
   created_at    DateTime @default(now())
 
   player_achievements PlayerAchievement[]
@@ -155,6 +160,7 @@ model Achievement {
   @@index([code])
   @@index([category])
 }
+
 
 model PlayerAchievement {
   id              String   @id @default(cuid())
