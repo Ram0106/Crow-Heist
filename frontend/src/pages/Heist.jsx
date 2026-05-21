@@ -115,7 +115,9 @@ export default function Heist() {
   if (error) {
     return (
       <AppLayout>
-        <div className="sharp-panel p-6 text-crow-red">{error}</div>
+        <div className="cyber-card p-6 border border-accent-danger/50 bg-accent-danger/5 text-accent-danger">
+          {error}
+        </div>
       </AppLayout>
     );
   }
@@ -123,7 +125,14 @@ export default function Heist() {
   if (!activeLevel) {
     return (
       <AppLayout>
-        <div className="sharp-panel p-6 text-crow-muted">Loading heist...</div>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="inline-block h-12 w-12 border-2 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin" />
+            <p className="mt-4 text-sm uppercase tracking-widest text-text-muted">
+              Initiating Heist Sequence...
+            </p>
+          </div>
+        </div>
       </AppLayout>
     );
   }
